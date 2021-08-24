@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/aliirsyaadn/kodein/internal/config"
+	"github.com/aliirsyaadn/kodein/internal/db"
 	"github.com/aliirsyaadn/kodein/internal/log"
 	"github.com/aliirsyaadn/kodein/internal/router"
 )
@@ -24,6 +25,10 @@ func main(){
 
 	// Fiber App
 	app := fiber.New()
+
+	// Connect Database
+	conn := db.ConnectDB(cfg.DB)
+	defer conn.Close()
 
 	// Initiate Middleware
 	app.Use(logger.New())
