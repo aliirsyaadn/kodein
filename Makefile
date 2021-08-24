@@ -2,14 +2,14 @@
 SHELL := /bin/bash
 export NOW = $(shell date +"%F %T")
 
-export APP_PORT="3000"
-export APP_ALLOW_ORIGIN="http://localhost:3000"
-export DB_NAME="kodein"
-export DB_USER="kodein"
-export DB_PASSWORD="developmentpass"
-export DB_HOST="127.0.0.1"
-export DB_PORT="5432"
-export DB_SSL_MODE="disable"
+export APP_PORT=3000
+export APP_ALLOW_ORIGIN=http://localhost:3000
+export DB_NAME=kodein
+export DB_USER=kodein
+export DB_PASSWORD=developmentpass
+export DB_HOST=127.0.0.1
+export DB_PORT=5432
+export DB_SSL_MODE=disable
 
 install:
 	@echo "configuring app"
@@ -55,7 +55,7 @@ seed-down:
 
 drop:
 	@echo "$(NOW) droping database... "
-	migrate -source file://files/sql/schema \
+	migrate -source file://files/sql/schemas \
 		-database postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL_MODE) drop
 	@echo "done"
 
