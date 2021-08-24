@@ -1,0 +1,5 @@
+CREATE DATABASE kodein;
+
+CREATE USER kodein WITH PASSWORD 'developmentpass';
+
+GRANT ALL PRIVILEGES ON DATABASE kodein TO kodein;
