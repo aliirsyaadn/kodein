@@ -38,16 +38,12 @@ func (h *memberHandlerImpl) GetMembers(c *fiber.Ctx) error{
 		return err
 	}
 
-	res := entity.ListMemberResponse{
-		Data: members,
-		Response: entity.ResponseSuccess,
-	}
-
-	return c.JSON(res)
+	return c.JSON(members)
 }
 
 func (h *memberHandlerImpl) GetMemberByID(c *fiber.Ctx) error{
-	member, err := h.memberService.GetMemberByID(c.Context(), c.Params("id"))
+	id := c.Params("id")
+	member, err := h.memberService.GetMemberByID(c.Context(), &id)
 
 	if err != nil {
 		log.ErrorDetail(memberHandlers, "error from services %v", err)
@@ -64,47 +60,39 @@ func (h *memberHandlerImpl) CreateMember(c *fiber.Ctx) error{
 		return err
 	}
 
-	member, err := h.memberService.CreateMember(c.Context(), &req.Data)
+	res, err := h.memberService.CreateMember(c.Context(), req)
 	if err != nil {
 		log.ErrorDetail(memberHandlers, "error from services %v", err)
 		return err
-	}
-
-	res := entity.CreateMemberResponse{
-		Data: *member,
-		Response: entity.ResponseSuccess,
 	}
 
 	return c.JSON(res)
 }
 
 func (h *memberHandlerImpl) UpdateMember(c *fiber.Ctx) error{
+	id := c.Params("id")
 	req := new(entity.UpdateMemberRequest)
 	if err := c.BodyParser(req); err != nil {
 		log.ErrorDetail(memberHandlers, "error parse body %v", err)
 		return err
 	}
 
-	member, err := h.memberService.UpdateMember(c.Context(), *req, c.Params("id"))
+	res, err := h.memberService.UpdateMember(c.Context(), req, &id)
 	if err != nil {
 		log.ErrorDetail(memberHandlers, "error from services %v", err)
 		return err
-	}
-
-	res := entity.UpdateMemberResponse{
-		Data: *member,
-		Response: entity.ResponseSuccess,
 	}
 
 	return c.JSON(res)
 }
 
 func (h *memberHandlerImpl) DeleteMember(c *fiber.Ctx) error {
-	err := h.memberService.DeleteMember(c.Context(), c.Params("id"))
+	id := c.Params("id")
+	res, err := h.memberService.DeleteMember(c.Context(), &id)
 	if err != nil {
 		log.ErrorDetail(memberHandlers, "error from services %v", err)
 		return err
 	}
 
-	return c.JSON(entity.ResponseSuccess)
+	return c.JSON(res)
 }

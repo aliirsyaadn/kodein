@@ -12,7 +12,7 @@ import (
 const intDBTag = "InternalDBTag"
 
 func ConnectDB(dbConfig config.DBConfig) *model.Queries {
-	sqldb, err := sql.Open("postgres", fmt.Sprintf("dbname=%s user=%s password=%s sslmode=%s", dbConfig.DBName, dbConfig.User, dbConfig.Password, dbConfig.SSLMode))
+	sqldb, err := sql.Open("postgres", fmt.Sprintf("dbname=%s user=%s password=%s sslmode=%s port=%s", dbConfig.DBName, dbConfig.User, dbConfig.Password, dbConfig.SSLMode, dbConfig.Port))
 
 	if err != nil {
 		log.ErrorDetail(intDBTag, "error connect database: %v", err)

@@ -1,10 +1,16 @@
 package router
 
 import (
+	"context"
+	"log"
+
+	"github.com/aliirsyaadn/kodein/grpc/chat"
+	"google.golang.org/grpc"
+
 	"github.com/aliirsyaadn/kodein/handlers"
 	"github.com/aliirsyaadn/kodein/model"
 	"github.com/aliirsyaadn/kodein/services/member"
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/gofiber/fiber/v2"
 )
 
 func SetUpRouter(app *fiber.App, model *model.Queries){
@@ -13,4 +19,33 @@ func SetUpRouter(app *fiber.App, model *model.Queries){
 	// Member
 	memberService := member.NewService(model)
 	handlers.NewMemberHandler(memberService).Register(api)
+
+	api.Post("/grade", Grade)
+}
+
+func Grade(c *fiber.Ctx) error {
+	var conn *grpc.ClientConn
+
+	conn, err := grpc.Dial(":9000", grpc.WithInsecure())
+
+	if err != nil {
+		log.Fatalf("could not connect: %s", err)
+	}
+
+	defer conn.Close()
+
+	c := chat.NewChatServiceClient(conn)
+
+	message := chat.Message{
+		Body: "Hello from the client!",
+	}
+
+	res, err := c.SayHello(context.Background(), &message)
+
+	if err != nil {
+		log.Fatalf("Error when calling SayHello: %s", err)
+	}
+
+	log.Printf("Response from Server: %s", res.Body)
+	return nil
 }

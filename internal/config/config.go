@@ -26,7 +26,7 @@ func loadConfigDB() *DBConfig {
 		User:     getEnv("DB_USER", "kodein"),
 		Password: getEnv("DB_PASSWORD", "developmentpass"),
 		Host:     getEnv("DB_HOST", "127.0.0.1"),
-		Port:     getEnv("DB_PORT", "5432"),
+		Port:     getEnv("DB_PORT", "5433"),
 		SSLMode:  getEnv("DB_SSL_MODE", "disable"),
 	}
 	return dbConfig

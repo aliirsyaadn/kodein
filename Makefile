@@ -4,8 +4,8 @@ export NOW = $(shell date +"%F %T")
 
 export APP_PORT=3000
 export APP_ALLOW_ORIGIN=http://localhost:3000
-export DB_NAME=kodein_db
-export DB_USER=kodein_db
+export DB_NAME=kodein
+export DB_USER=kodein
 export DB_PASSWORD=developmentpass
 export DB_HOST=127.0.0.1
 export DB_PORT=5433
@@ -65,7 +65,7 @@ sqlc:
 	@echo "done"
 
 connect_db:
-	PGPASSWORD=$(DB_PASSWORD) psql -U $(DB_USER) $(DB_NAME) -h 0.0.0.0 -p $(DB_PORT)
+	PGPASSWORD=$(DB_PASSWORD) psql -U $(DB_USER) $(DB_NAME) -h ${DB_HOST} -p $(DB_PORT)
 
 format:
 	@echo -n "$(NOW) formating code... "
@@ -76,3 +76,6 @@ restart: migrate-down migrate seed
 
 testing:
 	@go test ./test/... -v
+
+mock:
+	@mockgen -source=./services/member/main.go -destination=./test/services/member/mock/member_repository.go

@@ -9,4 +9,4 @@ service ChatService {
     rpc SayHello(Message) returns (Message) {}
 }
 
-option go_package = "github.com/aliirsyaadn/example-grpc/chat";
+option go_package = "github.com/aliirsyaadn/kodein/grpc/chat";

@@ -5,8 +5,3 @@ type Response struct {
 	Status  int    `json:"status,omitempty"`
 }
 
-var ResponseSuccess = Response{
-	Message: "succes",
-	Status: 200,
-}
-

@@ -13,7 +13,7 @@ import (
 
 const mainTag = "Main"
 
-func main(){
+func main() {
 	godotenv.Load()
 
 	// Load Config

@@ -10,6 +10,10 @@ type ListMemberResponse struct{
 	Response
 }
 
+type GetMemberResponse struct{
+	Data model.Member `json:"data"`
+	Response
+}
 
 type CreateMemberRequest struct {
 	Data model.InsertMemberParams `json:"data"`
@@ -32,5 +36,10 @@ type UpdateMemberRequest struct {
 
 type UpdateMemberResponse struct {
 	Data model.Member `json:"data"`
+	Response
+}
+
+type DeleteMemberResponse struct {
+	ID string `json:"id"`
 	Response
 }
