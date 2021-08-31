@@ -1,4 +1,4 @@
-package chat
+package grader
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 )
 
 type Server struct {
-	UnimplementedChatServiceServer
+	UnimplementedGraderServiceServer
 }
 
 func (s *Server) SayHello(ctx context.Context, message *Message) (*Message, error){

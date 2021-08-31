@@ -1,12 +1,12 @@
 syntax = "proto3";
-package chat;
+package grader;
 
 message Message {
     string body = 1;
 }
 
-service ChatService {
+service GraderService {
     rpc SayHello(Message) returns (Message) {}
 }
 
-option go_package = "github.com/aliirsyaadn/kodein/grpc/chat";
+option go_package = "github.com/aliirsyaadn/kodein/grpc/grader";

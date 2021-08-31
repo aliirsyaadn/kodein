@@ -74,8 +74,8 @@ format:
 
 restart: migrate-down migrate seed 
 
-testing:
-	@go test ./test/... -v
+test-services:
+	@go test ./services/... -v
 
-mock:
-	@mockgen -source=./services/member/main.go -destination=./test/services/member/mock/member_repository.go
+mock-repo:
+	@mockgen -source=./services/member/main.go -destination=./services/member/mock/mock_repository.go

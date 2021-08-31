@@ -1,4 +1,4 @@
-package member_test
+package member
 
 import (
 	"context"
@@ -13,14 +13,13 @@ import (
 	"github.com/aliirsyaadn/kodein/entity"
 	"github.com/aliirsyaadn/kodein/internal/response"
 	"github.com/aliirsyaadn/kodein/model"
-	"github.com/aliirsyaadn/kodein/services/member"
-	mock_member "github.com/aliirsyaadn/kodein/test/services/member/mock"
+	mock "github.com/aliirsyaadn/kodein/services/member/mock"
 )
 
 func TestGetMembers(t *testing.T){
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockRepo := mock_member.NewMockRepository(mockCtrl)
+	mockRepo := mock.NewMockRepository(mockCtrl)
 	id1 := uuid.New()
 	id2 := uuid.New()
 
@@ -41,7 +40,7 @@ func TestGetMembers(t *testing.T){
 		},
 	}, nil)
 
-	memberService := member.NewService(mockRepo)
+	memberService := NewService(mockRepo)
 
 	members, err := memberService.GetMembers(context.Background())
 	
@@ -53,11 +52,9 @@ func TestGetMembers(t *testing.T){
 func TestGetMemberByID(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockRepo := mock_member.NewMockRepository(mockCtrl)
+	mockRepo := mock.NewMockRepository(mockCtrl)
 	id1 := uuid.New()
 	id2 := uuid.New()
-	id1Str := id1.String()
-	id2Str := id2.String()
 
 	rtr1 := model.Member{
 		ID: id1,
@@ -81,17 +78,17 @@ func TestGetMemberByID(t *testing.T) {
 
 	
 	type fields struct {
-		r *mock_member.MockRepository
+		r Repository
 	}
 	type args struct {
 		ctx context.Context
-		id  *string
+		id  string
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *entity.GetMemberResponse
+		want    entity.GetMemberResponse
 		wantErr bool
 	}{
 		{
@@ -101,9 +98,9 @@ func TestGetMemberByID(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				id: &id1Str,
+				id: id1.String(),
 			},
-			want: &entity.GetMemberResponse{
+			want: entity.GetMemberResponse{
 				Data: rtr1,
 				Response: response.OK,
 			},
@@ -116,9 +113,9 @@ func TestGetMemberByID(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				id: &id2Str,
+				id: id2.String(),
 			},
-			want: &entity.GetMemberResponse{
+			want: entity.GetMemberResponse{
 				Data: rtr2,
 				Response: response.OK,
 			},
@@ -127,7 +124,7 @@ func TestGetMemberByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := member.NewService(tt.fields.r)
+			s := NewService(tt.fields.r)
 	
 			got, err := s.GetMemberByID(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -144,7 +141,7 @@ func TestGetMemberByID(t *testing.T) {
 func TestCreateMember(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockRepo := mock_member.NewMockRepository(mockCtrl)
+	mockRepo := mock.NewMockRepository(mockCtrl)
 	id1 := uuid.New()
 	id2 := uuid.New()
 
@@ -181,17 +178,17 @@ func TestCreateMember(t *testing.T) {
 	mockRepo.EXPECT().InsertMember(context.Background(), dataInsert2).Return(rtr2, nil)
 
 	type fields struct {
-		r *mock_member.MockRepository
+		r Repository
 	}
 	type args struct {
 		ctx context.Context
-		arg *entity.CreateMemberRequest
+		arg entity.CreateMemberRequest
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *entity.CreateMemberResponse
+		want    entity.CreateMemberResponse
 		wantErr bool
 	}{
 		{
@@ -201,11 +198,11 @@ func TestCreateMember(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				arg: &entity.CreateMemberRequest{
+				arg: entity.CreateMemberRequest{
 					Data: dataInsert1,
 				},
 			},
-			want: &entity.CreateMemberResponse{
+			want: entity.CreateMemberResponse{
 				Data: rtr1,
 				Response: response.OK,
 			},
@@ -218,11 +215,11 @@ func TestCreateMember(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				arg: &entity.CreateMemberRequest{
+				arg: entity.CreateMemberRequest{
 					Data: dataInsert2,
 				},
 			},
-			want: &entity.CreateMemberResponse{
+			want: entity.CreateMemberResponse{
 				Data: rtr2,
 				Response: response.OK,
 			},
@@ -231,7 +228,7 @@ func TestCreateMember(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := member.NewService(tt.fields.r)
+			s := NewService(tt.fields.r)
 			got, err := s.CreateMember(tt.args.ctx, tt.args.arg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("service.CreateMember() error = %v, wantErr %v", err, tt.wantErr)
@@ -247,11 +244,9 @@ func TestCreateMember(t *testing.T) {
 func TestUpdateMember(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockRepo := mock_member.NewMockRepository(mockCtrl)
+	mockRepo := mock.NewMockRepository(mockCtrl)
 	id1 := uuid.New()
 	id2 := uuid.New()
-	id1Str := id1.String()
-	id2Str := id2.String()
 
 	dataUpdate1 := model.UpdateMemberParams{
 		ID: id1,
@@ -288,18 +283,18 @@ func TestUpdateMember(t *testing.T) {
 	mockRepo.EXPECT().UpdateMember(context.Background(), dataUpdate2).Return(rtr2, nil)
 
 	type fields struct {
-		r *mock_member.MockRepository
+		r Repository
 	}
 	type args struct {
 		ctx context.Context
-		arg *entity.UpdateMemberRequest
-		id  *string
+		arg entity.UpdateMemberRequest
+		id  string
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *entity.UpdateMemberResponse
+		want    entity.UpdateMemberResponse
 		wantErr bool
 	}{
 		{
@@ -309,16 +304,16 @@ func TestUpdateMember(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				arg: &entity.UpdateMemberRequest{
+				arg: entity.UpdateMemberRequest{
 					Data: entity.UpdateMember{
 						Name: null.NewString(dataUpdate1.Name, true),
 						Username: null.NewString(dataUpdate1.Username, true),
 						Email: null.NewString(dataUpdate1.Email, true),
 					},
 				},
-				id: &id1Str,
+				id: id1.String(),
 			},
-			want: &entity.UpdateMemberResponse{
+			want: entity.UpdateMemberResponse{
 				Data: rtr1,
 				Response: response.OK,
 			},
@@ -331,16 +326,16 @@ func TestUpdateMember(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				arg: &entity.UpdateMemberRequest{
+				arg: entity.UpdateMemberRequest{
 					Data: entity.UpdateMember{
 						Name: null.NewString(dataUpdate2.Name, true),
 						Username: null.NewString(dataUpdate2.Username, true),
 						Email: null.NewString(dataUpdate2.Email, true),
 					},
 				},
-				id: &id2Str,
+				id: id2.String(),
 			},
-			want: &entity.UpdateMemberResponse{
+			want: entity.UpdateMemberResponse{
 				Data: rtr2,
 				Response: response.OK,
 			},
@@ -350,7 +345,7 @@ func TestUpdateMember(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := member.NewService(tt.fields.r)
+			s := NewService(tt.fields.r)
 			got, err := s.UpdateMember(tt.args.ctx, tt.args.arg, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("service.UpdateMember() error = %v, wantErr %v", err, tt.wantErr)
@@ -363,30 +358,28 @@ func TestUpdateMember(t *testing.T) {
 	}
 }
 
-func Test_service_DeleteMember(t *testing.T) {
+func TestDeleteMember(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockRepo := mock_member.NewMockRepository(mockCtrl)
+	mockRepo := mock.NewMockRepository(mockCtrl)
 	id1 := uuid.New()
 	id2 := uuid.New()
-	id1Str := id1.String()
-	id2Str := id2.String()
 
 	mockRepo.EXPECT().DeleteMember(context.Background(), id1).Return(nil)
 	mockRepo.EXPECT().DeleteMember(context.Background(), id2).Return(nil)
 
 	type fields struct {
-		r *mock_member.MockRepository
+		r Repository
 	}
 	type args struct {
 		ctx context.Context
-		id  *string
+		id  string
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *entity.DeleteMemberResponse
+		want    entity.DeleteMemberResponse
 		wantErr bool
 	}{
 		{
@@ -396,10 +389,10 @@ func Test_service_DeleteMember(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				id: &id1Str,
+				id: id1.String(),
 			},
-			want: &entity.DeleteMemberResponse{
-				ID: id1Str,
+			want: entity.DeleteMemberResponse{
+				ID: id1.String(),
 				Response: response.OK,
 			},
 			wantErr: false,
@@ -411,10 +404,10 @@ func Test_service_DeleteMember(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				id: &id2Str,
+				id: id2.String(),
 			},
-			want: &entity.DeleteMemberResponse{
-				ID: id2Str,
+			want: entity.DeleteMemberResponse{
+				ID: id2.String(),
 				Response: response.OK,
 			},
 			wantErr: false,
@@ -422,7 +415,7 @@ func Test_service_DeleteMember(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := member.NewService(tt.fields.r)
+			s := NewService(tt.fields.r)
 			got, err := s.DeleteMember(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("service.DeleteMember() error = %v, wantErr %v", err, tt.wantErr)

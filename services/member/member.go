@@ -14,11 +14,11 @@ import (
 const adminTag = "MemberService"
 
 type Service interface {
-	GetMembers(ctx context.Context) (res *entity.ListMemberResponse, err error)
-	GetMemberByID(ctx context.Context, id *string) (res *entity.GetMemberResponse, err error)
-	CreateMember(ctx context.Context, arg *entity.CreateMemberRequest) (res *entity.CreateMemberResponse, err error)
-	UpdateMember(ctx context.Context, arg *entity.UpdateMemberRequest, id *string) (res *entity.UpdateMemberResponse, err error)
-	DeleteMember(ctx context.Context, id *string) (res *entity.DeleteMemberResponse, err error)
+	GetMembers(ctx context.Context) (res entity.ListMemberResponse, err error)
+	GetMemberByID(ctx context.Context, id string) (res entity.GetMemberResponse, err error)
+	CreateMember(ctx context.Context, arg entity.CreateMemberRequest) (res entity.CreateMemberResponse, err error)
+	UpdateMember(ctx context.Context, arg entity.UpdateMemberRequest, id string) (res entity.UpdateMemberResponse, err error)
+	DeleteMember(ctx context.Context, id string) (res entity.DeleteMemberResponse, err error)
 }
 
 type Repository interface {
@@ -37,43 +37,43 @@ func NewService(r Repository) Service {
 	return &service{r}
 }
 
-func (s *service) GetMembers(ctx context.Context) (*entity.ListMemberResponse, error) {
+func (s *service) GetMembers(ctx context.Context) (res entity.ListMemberResponse, err error) {
 	data, err := s.r.GetMembers(ctx)
 	if err != nil {
 		log.ErrorDetail(adminTag, "error GetAllMember from DB: %v", err)
-		return nil, err
+		return 
 	}
 
-	res := &entity.ListMemberResponse{
+	res = entity.ListMemberResponse{
 		Data:     data,
 		Response: response.OK,
 	}
 
-	return res, nil
+	return
 }
 
-func (s *service) GetMemberByID(ctx context.Context, id *string) (*entity.GetMemberResponse, error) {
-	idParsed, err := uuid.Parse(*id)
+func (s *service) GetMemberByID(ctx context.Context, id string) (res entity.GetMemberResponse, err error) {
+	idParsed, err := uuid.Parse(id)
 	if err != nil {
 		log.ErrorDetail(adminTag, "error parse uuid: %v", err)
-		return nil, err
+		return 
 	}
 
 	data, err := s.r.GetMemberByID(ctx, idParsed)
 	if err != nil {
 		log.ErrorDetail(adminTag, "error GetMemberByID from DB: %v", err)
-		return nil, err
+		return
 	}
 
-	res := &entity.GetMemberResponse{
+	res = entity.GetMemberResponse{
 		Data:     data,
 		Response: response.OK,
 	}
 
-	return res, nil
+	return
 }
 
-func (s *service) CreateMember(ctx context.Context, arg *entity.CreateMemberRequest) (*entity.CreateMemberResponse, error) {
+func (s *service) CreateMember(ctx context.Context, arg entity.CreateMemberRequest) (res entity.CreateMemberResponse, err error) {
 	dataInsert := model.InsertMemberParams{
 		Name:     arg.Data.Name,
 		Username: arg.Data.Username,
@@ -84,10 +84,10 @@ func (s *service) CreateMember(ctx context.Context, arg *entity.CreateMemberRequ
 	data, err := s.r.InsertMember(ctx, dataInsert)
 	if err != nil {
 		log.ErrorDetail(adminTag, "error InsertMember from DB: %v", err)
-		return nil, err
+		return 
 	}
 
-	res := &entity.CreateMemberResponse{
+	res = entity.CreateMemberResponse{
 		Data:     data,
 		Response: response.OK,
 	}
@@ -95,11 +95,12 @@ func (s *service) CreateMember(ctx context.Context, arg *entity.CreateMemberRequ
 	return res, nil
 }
 
-func (s *service) UpdateMember(ctx context.Context, arg *entity.UpdateMemberRequest, id *string) (*entity.UpdateMemberResponse, error) {
-	idParsed, err := uuid.Parse(*id)
+func (s *service) UpdateMember(ctx context.Context, arg entity.UpdateMemberRequest, id string) (res entity.UpdateMemberResponse, err error) {
+	
+	idParsed, err := uuid.Parse(id)
 	if err != nil {
 		log.ErrorDetail(adminTag, "error parse uuid: %v", err)
-		return nil, err
+		return
 	}
 
 	dataUpdate := model.UpdateMemberParams{
@@ -112,32 +113,32 @@ func (s *service) UpdateMember(ctx context.Context, arg *entity.UpdateMemberRequ
 	data, err := s.r.UpdateMember(ctx, dataUpdate)
 	if err != nil {
 		log.ErrorDetail(adminTag, "error UpdateMember from DB: %v", err)
-		return nil, err
+		return
 	}
 
-	res := &entity.UpdateMemberResponse{
+	res = entity.UpdateMemberResponse{
 		Data:     data,
 		Response: response.OK,
 	}
 
-	return res, nil
+	return
 }
 
-func (s *service) DeleteMember(ctx context.Context, id *string) (*entity.DeleteMemberResponse, error) {
-	idParsed, err := uuid.Parse(*id)
+func (s *service) DeleteMember(ctx context.Context, id string) (res entity.DeleteMemberResponse, err error) {
+	idParsed, err := uuid.Parse(id)
 	if err != nil {
 		log.ErrorDetail(adminTag, "error parse uuid: %v", err)
-		return nil, err
+		return
 	}
 
 	err = s.r.DeleteMember(ctx, idParsed)
 	if err != nil {
 		log.ErrorDetail(adminTag, "error DeleteMember from DB: %v", err)
-		return nil, err
+		return 
 	}
 
-	res := &entity.DeleteMemberResponse{
-		ID:       *id,
+	res = entity.DeleteMemberResponse{
+		ID:       id,
 		Response: response.OK,
 	}
 

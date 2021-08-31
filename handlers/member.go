@@ -43,7 +43,7 @@ func (h *memberHandlerImpl) GetMembers(c *fiber.Ctx) error{
 
 func (h *memberHandlerImpl) GetMemberByID(c *fiber.Ctx) error{
 	id := c.Params("id")
-	member, err := h.memberService.GetMemberByID(c.Context(), &id)
+	member, err := h.memberService.GetMemberByID(c.Context(), id)
 
 	if err != nil {
 		log.ErrorDetail(memberHandlers, "error from services %v", err)
@@ -60,7 +60,7 @@ func (h *memberHandlerImpl) CreateMember(c *fiber.Ctx) error{
 		return err
 	}
 
-	res, err := h.memberService.CreateMember(c.Context(), req)
+	res, err := h.memberService.CreateMember(c.Context(), *req)
 	if err != nil {
 		log.ErrorDetail(memberHandlers, "error from services %v", err)
 		return err
@@ -77,7 +77,7 @@ func (h *memberHandlerImpl) UpdateMember(c *fiber.Ctx) error{
 		return err
 	}
 
-	res, err := h.memberService.UpdateMember(c.Context(), req, &id)
+	res, err := h.memberService.UpdateMember(c.Context(), *req, id)
 	if err != nil {
 		log.ErrorDetail(memberHandlers, "error from services %v", err)
 		return err
@@ -88,7 +88,7 @@ func (h *memberHandlerImpl) UpdateMember(c *fiber.Ctx) error{
 
 func (h *memberHandlerImpl) DeleteMember(c *fiber.Ctx) error {
 	id := c.Params("id")
-	res, err := h.memberService.DeleteMember(c.Context(), &id)
+	res, err := h.memberService.DeleteMember(c.Context(), id)
 	if err != nil {
 		log.ErrorDetail(memberHandlers, "error from services %v", err)
 		return err

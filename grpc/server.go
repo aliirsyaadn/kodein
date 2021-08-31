@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/aliirsyaadn/kodein/grpc/chat"
+	"github.com/aliirsyaadn/kodein/grpc/grader"
 	"google.golang.org/grpc"
 )
 
@@ -15,11 +15,11 @@ func main(){
 		log.Fatalf("Failed to listen on port 9000: %v", err)
 	}
 
-	c := chat.Server{}
+	c := grader.Server{}
 
 	grpcServer := grpc.NewServer()
 
-	chat.RegisterChatServiceServer(grpcServer, &c)
+	grader.RegisterGraderServiceServer(grpcServer, &c)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve gRPC server over port 9000: %v", err)

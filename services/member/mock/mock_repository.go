@@ -38,10 +38,10 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // CreateMember mocks base method.
-func (m *MockService) CreateMember(ctx context.Context, arg *entity.CreateMemberRequest) (*entity.CreateMemberResponse, error) {
+func (m *MockService) CreateMember(ctx context.Context, arg entity.CreateMemberRequest) (entity.CreateMemberResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateMember", ctx, arg)
-	ret0, _ := ret[0].(*entity.CreateMemberResponse)
+	ret0, _ := ret[0].(entity.CreateMemberResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -53,10 +53,10 @@ func (mr *MockServiceMockRecorder) CreateMember(ctx, arg interface{}) *gomock.Ca
 }
 
 // DeleteMember mocks base method.
-func (m *MockService) DeleteMember(ctx context.Context, id *string) (*entity.DeleteMemberResponse, error) {
+func (m *MockService) DeleteMember(ctx context.Context, id string) (entity.DeleteMemberResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteMember", ctx, id)
-	ret0, _ := ret[0].(*entity.DeleteMemberResponse)
+	ret0, _ := ret[0].(entity.DeleteMemberResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -68,10 +68,10 @@ func (mr *MockServiceMockRecorder) DeleteMember(ctx, id interface{}) *gomock.Cal
 }
 
 // GetMemberByID mocks base method.
-func (m *MockService) GetMemberByID(ctx context.Context, id *string) (*entity.GetMemberResponse, error) {
+func (m *MockService) GetMemberByID(ctx context.Context, id string) (entity.GetMemberResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMemberByID", ctx, id)
-	ret0, _ := ret[0].(*entity.GetMemberResponse)
+	ret0, _ := ret[0].(entity.GetMemberResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -83,10 +83,10 @@ func (mr *MockServiceMockRecorder) GetMemberByID(ctx, id interface{}) *gomock.Ca
 }
 
 // GetMembers mocks base method.
-func (m *MockService) GetMembers(ctx context.Context) (*entity.ListMemberResponse, error) {
+func (m *MockService) GetMembers(ctx context.Context) (entity.ListMemberResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMembers", ctx)
-	ret0, _ := ret[0].(*entity.ListMemberResponse)
+	ret0, _ := ret[0].(entity.ListMemberResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -98,10 +98,10 @@ func (mr *MockServiceMockRecorder) GetMembers(ctx interface{}) *gomock.Call {
 }
 
 // UpdateMember mocks base method.
-func (m *MockService) UpdateMember(ctx context.Context, arg *entity.UpdateMemberRequest, id *string) (*entity.UpdateMemberResponse, error) {
+func (m *MockService) UpdateMember(ctx context.Context, arg entity.UpdateMemberRequest, id string) (entity.UpdateMemberResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateMember", ctx, arg, id)
-	ret0, _ := ret[0].(*entity.UpdateMemberResponse)
+	ret0, _ := ret[0].(entity.UpdateMemberResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

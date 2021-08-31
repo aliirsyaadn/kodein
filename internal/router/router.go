@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/aliirsyaadn/kodein/grpc/chat"
+	"github.com/aliirsyaadn/kodein/grpc/grader"
 	"google.golang.org/grpc"
 
 	"github.com/aliirsyaadn/kodein/handlers"
@@ -34,13 +34,13 @@ func Grade(c *fiber.Ctx) error {
 
 	defer conn.Close()
 
-	c := chat.NewChatServiceClient(conn)
+	service := grader.NewGraderServiceClient(conn)
 
-	message := chat.Message{
+	message := grader.Message{
 		Body: "Hello from the client!",
 	}
 
-	res, err := c.SayHello(context.Background(), &message)
+	res, err := service.SayHello(context.Background(), &message)
 
 	if err != nil {
 		log.Fatalf("Error when calling SayHello: %s", err)

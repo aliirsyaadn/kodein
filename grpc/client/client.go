@@ -5,7 +5,7 @@ import (
 
 	"context"
 
-	"github.com/aliirsyaadn/kodein/grpc/chat"
+	"github.com/aliirsyaadn/kodein/grpc/grader"
 	"google.golang.org/grpc"
 )
 
@@ -20,9 +20,9 @@ func main(){
 
 	defer conn.Close()
 
-	c := chat.NewChatServiceClient(conn)
+	c := grader.NewGraderServiceClient(conn)
 
-	message := chat.Message{
+	message := grader.Message{
 		Body: "Hello from the client!",
 	}
 
