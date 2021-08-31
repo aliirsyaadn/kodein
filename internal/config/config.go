@@ -7,21 +7,24 @@ import (
 const configTag = "Config"
 
 func LoadConfig() (*Config, error) {
-	appConfig := &APPConfig{
+	appConfig := APPConfig{
 		Port: getEnv("APP_PORT", "5000"),
 	}
 
 	dbConfig := loadConfigDB()
 
+	redisConfig := loadConfigRedis()
+
 	config := &Config{
-		DB:  *dbConfig,
-		APP: *appConfig,
+		DB:    dbConfig,
+		REDIS: redisConfig,
+		APP:   appConfig,
 	}
 	return config, nil
 }
 
-func loadConfigDB() *DBConfig {
-	dbConfig := &DBConfig{
+func loadConfigDB() DBConfig {
+	dbConfig := DBConfig{
 		DBName:   getEnv("DB_NAME", "kodein"),
 		User:     getEnv("DB_USER", "kodein"),
 		Password: getEnv("DB_PASSWORD", "developmentpass"),
@@ -30,6 +33,15 @@ func loadConfigDB() *DBConfig {
 		SSLMode:  getEnv("DB_SSL_MODE", "disable"),
 	}
 	return dbConfig
+}
+
+func loadConfigRedis() RedisConfig {
+	redisConfig := RedisConfig{
+		Address:  getEnv("REDIS_ADDRESS", "localhost:6379"),
+		Password: getEnv("REDIS_PASSWORD", ""),
+		DB:       getEnv("REDIS_DB", "0"),
+	}
+	return redisConfig
 }
 
 func getEnv(key string, def string) string {

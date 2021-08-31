@@ -1,8 +1,9 @@
 package config
 
 type Config struct {
-	DB  DBConfig
-	APP APPConfig
+	DB    DBConfig
+	REDIS RedisConfig
+	APP   APPConfig
 }
 
 type APPConfig struct {
@@ -16,4 +17,10 @@ type DBConfig struct {
 	Host     string
 	Port     string
 	SSLMode  string
+}
+
+type RedisConfig struct {
+	Address  string
+	Password string
+	DB       string
 }

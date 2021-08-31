@@ -13,10 +13,11 @@ import (
 	"github.com/aliirsyaadn/kodein/services/member"
 	"github.com/aliirsyaadn/kodein/services/problem"
 	"github.com/aliirsyaadn/kodein/services/project"
+	"github.com/go-redis/redis/v8"
 	fiber "github.com/gofiber/fiber/v2"
 )
 
-func SetUpRouter(app *fiber.App, model *model.Queries) {
+func SetUpRouter(app *fiber.App, model *model.Queries, rdb *redis.Client) {
 	api := app.Group("/api")
 
 	// Member

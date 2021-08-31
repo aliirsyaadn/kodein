@@ -16,6 +16,8 @@ func main() {
 		DB:       0,  // use default DB
 	})
 
+	defer rdb.Close()
+
 	ctx := context.Background()
 
 	pong, err := rdb.Ping(ctx).Result()

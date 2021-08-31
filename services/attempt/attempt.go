@@ -112,11 +112,11 @@ func (s *service) UpdateAttempt(ctx context.Context, arg entity.UpdateAttemptReq
 	}
 
 	dataUpdate := model.UpdateAttemptParams{
-		ID:          idParsed,
-		Language:  model.LanguageTypePython,
-		IsSolved:  arg.Data.IsSolved.Bool,
-		Score:     int16(arg.Data.Score.Int64),
-		Code:      arg.Data.Code.String,
+		ID:       idParsed,
+		Language: model.LanguageTypePython,
+		IsSolved: arg.Data.IsSolved.Bool,
+		Score:    int16(arg.Data.Score.Int64),
+		Code:     arg.Data.Code.String,
 	}
 
 	data, err := s.r.UpdateAttempt(ctx, dataUpdate)

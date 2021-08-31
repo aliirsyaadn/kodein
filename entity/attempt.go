@@ -25,10 +25,10 @@ type CreateAttemptResponse struct {
 }
 
 type UpdateAttempt struct {
-	Language  null.String `json:"language"`
-	IsSolved  null.Bool   `json:"is_solved"`
-	Score     null.Int    `json:"score"`
-	Code      null.String `json:"code"`
+	Language null.String `json:"language"`
+	IsSolved null.Bool   `json:"is_solved"`
+	Score    null.Int    `json:"score"`
+	Code     null.String `json:"code"`
 }
 
 type UpdateAttemptRequest struct {
