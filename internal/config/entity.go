@@ -6,7 +6,7 @@ type Config struct {
 }
 
 type APPConfig struct {
-	Port        string
+	Port string
 }
 
 type DBConfig struct {

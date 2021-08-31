@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func main(){
+func main() {
 	lis, err := net.Listen("tcp", ":9000")
 
 	if err != nil {

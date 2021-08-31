@@ -14,13 +14,13 @@ type memberHandlerImpl struct {
 	memberService member.Service
 }
 
-func NewMemberHandler(memberService member.Service) *memberHandlerImpl{
+func NewMemberHandler(memberService member.Service) *memberHandlerImpl {
 	return &memberHandlerImpl{
 		memberService: memberService,
 	}
 }
 
-func (h *memberHandlerImpl) Register(r fiber.Router){
+func (h *memberHandlerImpl) Register(r fiber.Router) {
 	r = r.Group("/member")
 
 	r.Get("/", h.GetMembers)
@@ -30,7 +30,7 @@ func (h *memberHandlerImpl) Register(r fiber.Router){
 	r.Delete("/:id", h.DeleteMember)
 }
 
-func (h *memberHandlerImpl) GetMembers(c *fiber.Ctx) error{
+func (h *memberHandlerImpl) GetMembers(c *fiber.Ctx) error {
 	members, err := h.memberService.GetMembers(c.Context())
 
 	if err != nil {
@@ -41,7 +41,7 @@ func (h *memberHandlerImpl) GetMembers(c *fiber.Ctx) error{
 	return c.JSON(members)
 }
 
-func (h *memberHandlerImpl) GetMemberByID(c *fiber.Ctx) error{
+func (h *memberHandlerImpl) GetMemberByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	member, err := h.memberService.GetMemberByID(c.Context(), id)
 
@@ -53,7 +53,7 @@ func (h *memberHandlerImpl) GetMemberByID(c *fiber.Ctx) error{
 	return c.JSON(member)
 }
 
-func (h *memberHandlerImpl) CreateMember(c *fiber.Ctx) error{
+func (h *memberHandlerImpl) CreateMember(c *fiber.Ctx) error {
 	req := new(entity.CreateMemberRequest)
 	if err := c.BodyParser(req); err != nil {
 		log.ErrorDetail(memberHandlers, "error parse body %v", err)
@@ -69,7 +69,7 @@ func (h *memberHandlerImpl) CreateMember(c *fiber.Ctx) error{
 	return c.JSON(res)
 }
 
-func (h *memberHandlerImpl) UpdateMember(c *fiber.Ctx) error{
+func (h *memberHandlerImpl) UpdateMember(c *fiber.Ctx) error {
 	id := c.Params("id")
 	req := new(entity.UpdateMemberRequest)
 	if err := c.BodyParser(req); err != nil {

@@ -7,13 +7,13 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func main(){
+func main() {
 	fmt.Println("Redis Testing")
-	
+
 	rdb := redis.NewClient(&redis.Options{
-		Addr:	  "localhost:6379",
+		Addr:     "localhost:6379",
 		Password: "", // no password set
-		DB:		  0,  // use default DB
+		DB:       0,  // use default DB
 	})
 
 	ctx := context.Background()

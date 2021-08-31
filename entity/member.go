@@ -5,12 +5,12 @@ import (
 	"gopkg.in/guregu/null.v3"
 )
 
-type ListMemberResponse struct{
+type ListMemberResponse struct {
 	Data []model.Member `json:"data"`
 	Response
 }
 
-type GetMemberResponse struct{
+type GetMemberResponse struct {
 	Data model.Member `json:"data"`
 	Response
 }
@@ -25,9 +25,9 @@ type CreateMemberResponse struct {
 }
 
 type UpdateMember struct {
-	Name null.String `json:"name"`
+	Name     null.String `json:"name"`
 	Username null.String `json:"username"`
-	Email null.String `json:"email"`
+	Email    null.String `json:"email"`
 }
 
 type UpdateMemberRequest struct {

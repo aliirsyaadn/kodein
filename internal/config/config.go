@@ -8,7 +8,7 @@ const configTag = "Config"
 
 func LoadConfig() (*Config, error) {
 	appConfig := &APPConfig{
-		Port:        getEnv("APP_PORT", "5000"),
+		Port: getEnv("APP_PORT", "5000"),
 	}
 
 	dbConfig := loadConfigDB()

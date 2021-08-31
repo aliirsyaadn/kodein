@@ -16,7 +16,7 @@ import (
 	mock "github.com/aliirsyaadn/kodein/services/member/mock"
 )
 
-func TestGetMembers(t *testing.T){
+func TestGetMembers(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockRepo := mock.NewMockRepository(mockCtrl)
@@ -25,25 +25,25 @@ func TestGetMembers(t *testing.T){
 
 	mockRepo.EXPECT().GetMembers(context.Background()).Return([]model.Member{
 		{
-			ID: id1,
-			Name: "Ali Irsyaad",
+			ID:       id1,
+			Name:     "Ali Irsyaad",
 			Username: "aliirsyaadn",
 			Password: "alipassword",
-			Email: "ali@gmail.com",
+			Email:    "ali@gmail.com",
 		},
 		{
-			ID: id2,
-			Name: "John Doe",
+			ID:       id2,
+			Name:     "John Doe",
 			Username: "johnDoe",
 			Password: "johnpassword",
-			Email: "john@gmail.com",
+			Email:    "john@gmail.com",
 		},
 	}, nil)
 
 	memberService := NewService(mockRepo)
 
 	members, err := memberService.GetMembers(context.Background())
-	
+
 	assert.Nil(t, err)
 	assert.NotNil(t, members)
 	assert.Equal(t, len(members.Data), 2)
@@ -57,26 +57,25 @@ func TestGetMemberByID(t *testing.T) {
 	id2 := uuid.New()
 
 	rtr1 := model.Member{
-		ID: id1,
-		Name: "Ali Irsyaad",
+		ID:       id1,
+		Name:     "Ali Irsyaad",
 		Username: "aliirsyaadn",
 		Password: "alipassword",
-		Email: "ali@gmail.com",
+		Email:    "ali@gmail.com",
 	}
 
 	rtr2 := model.Member{
-		ID: id2,
-		Name: "John Doe",
+		ID:       id2,
+		Name:     "John Doe",
 		Username: "johnDoe",
 		Password: "johnpassword",
-		Email: "john@gmail.com",	
+		Email:    "john@gmail.com",
 	}
 
 	mockRepo.EXPECT().GetMemberByID(context.Background(), id1).Return(rtr1, nil)
 
 	mockRepo.EXPECT().GetMemberByID(context.Background(), id2).Return(rtr2, nil)
 
-	
 	type fields struct {
 		r Repository
 	}
@@ -98,10 +97,10 @@ func TestGetMemberByID(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				id: id1.String(),
+				id:  id1.String(),
 			},
 			want: entity.GetMemberResponse{
-				Data: rtr1,
+				Data:     rtr1,
 				Response: response.OK,
 			},
 			wantErr: false,
@@ -113,10 +112,10 @@ func TestGetMemberByID(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				id: id2.String(),
+				id:  id2.String(),
 			},
 			want: entity.GetMemberResponse{
-				Data: rtr2,
+				Data:     rtr2,
 				Response: response.OK,
 			},
 			wantErr: false,
@@ -125,7 +124,7 @@ func TestGetMemberByID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := NewService(tt.fields.r)
-	
+
 			got, err := s.GetMemberByID(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("service.GetMemberByID() error = %v, wantErr %v", err, tt.wantErr)
@@ -146,32 +145,32 @@ func TestCreateMember(t *testing.T) {
 	id2 := uuid.New()
 
 	dataInsert1 := model.InsertMemberParams{
-		Name: "Ali Irsyaad",
+		Name:     "Ali Irsyaad",
 		Username: "aliirsyaadn",
 		Password: "alipassword",
-		Email: "ali@gmail.com",
+		Email:    "ali@gmail.com",
 	}
 
 	dataInsert2 := model.InsertMemberParams{
-		Name: "John Doe",
+		Name:     "John Doe",
 		Username: "johnDoe",
 		Password: "johnpassword",
-		Email: "john@gmail.com",
+		Email:    "john@gmail.com",
 	}
 
 	rtr1 := model.Member{
-		ID: id1,
-		Name: "Ali Irsyaad",
+		ID:       id1,
+		Name:     "Ali Irsyaad",
 		Username: "aliirsyaadn",
 		Password: "alipassword",
-		Email: "ali@gmail.com",
+		Email:    "ali@gmail.com",
 	}
 	rtr2 := model.Member{
-		ID: id2,
-		Name: "John Doe",
+		ID:       id2,
+		Name:     "John Doe",
 		Username: "johnDoe",
 		Password: "johnpassword",
-		Email: "john@gmail.com",
+		Email:    "john@gmail.com",
 	}
 	mockRepo.EXPECT().InsertMember(context.Background(), dataInsert1).Return(rtr1, nil)
 
@@ -203,7 +202,7 @@ func TestCreateMember(t *testing.T) {
 				},
 			},
 			want: entity.CreateMemberResponse{
-				Data: rtr1,
+				Data:     rtr1,
 				Response: response.OK,
 			},
 			wantErr: false,
@@ -220,7 +219,7 @@ func TestCreateMember(t *testing.T) {
 				},
 			},
 			want: entity.CreateMemberResponse{
-				Data: rtr2,
+				Data:     rtr2,
 				Response: response.OK,
 			},
 			wantErr: false,
@@ -249,33 +248,33 @@ func TestUpdateMember(t *testing.T) {
 	id2 := uuid.New()
 
 	dataUpdate1 := model.UpdateMemberParams{
-		ID: id1,
-		Name: "Ali Irsyaad",
+		ID:       id1,
+		Name:     "Ali Irsyaad",
 		Username: "aliirsyaadn",
-		Email: "ali@gmail.com",
+		Email:    "ali@gmail.com",
 	}
 
 	dataUpdate2 := model.UpdateMemberParams{
-		ID: id2,
-		Name: "John Doe",
+		ID:       id2,
+		Name:     "John Doe",
 		Username: "johnDoe",
-		Email: "john@gmail.com",
+		Email:    "john@gmail.com",
 	}
 
 	rtr1 := model.Member{
-		ID: id1,
-		Name: "Ali Irsyaad",
+		ID:       id1,
+		Name:     "Ali Irsyaad",
 		Username: "aliirsyaadn",
 		Password: "alipassword",
-		Email: "ali@gmail.com",
+		Email:    "ali@gmail.com",
 	}
 
 	rtr2 := model.Member{
-		ID: id2,
-		Name: "John Doe",
+		ID:       id2,
+		Name:     "John Doe",
 		Username: "johnDoe",
 		Password: "johnpassword",
-		Email: "john@gmail.com",	
+		Email:    "john@gmail.com",
 	}
 
 	mockRepo.EXPECT().UpdateMember(context.Background(), dataUpdate1).Return(rtr1, nil)
@@ -306,15 +305,15 @@ func TestUpdateMember(t *testing.T) {
 				ctx: context.Background(),
 				arg: entity.UpdateMemberRequest{
 					Data: entity.UpdateMember{
-						Name: null.NewString(dataUpdate1.Name, true),
+						Name:     null.NewString(dataUpdate1.Name, true),
 						Username: null.NewString(dataUpdate1.Username, true),
-						Email: null.NewString(dataUpdate1.Email, true),
+						Email:    null.NewString(dataUpdate1.Email, true),
 					},
 				},
 				id: id1.String(),
 			},
 			want: entity.UpdateMemberResponse{
-				Data: rtr1,
+				Data:     rtr1,
 				Response: response.OK,
 			},
 			wantErr: false,
@@ -328,20 +327,19 @@ func TestUpdateMember(t *testing.T) {
 				ctx: context.Background(),
 				arg: entity.UpdateMemberRequest{
 					Data: entity.UpdateMember{
-						Name: null.NewString(dataUpdate2.Name, true),
+						Name:     null.NewString(dataUpdate2.Name, true),
 						Username: null.NewString(dataUpdate2.Username, true),
-						Email: null.NewString(dataUpdate2.Email, true),
+						Email:    null.NewString(dataUpdate2.Email, true),
 					},
 				},
 				id: id2.String(),
 			},
 			want: entity.UpdateMemberResponse{
-				Data: rtr2,
+				Data:     rtr2,
 				Response: response.OK,
 			},
 			wantErr: false,
 		},
-
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -389,10 +387,10 @@ func TestDeleteMember(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				id: id1.String(),
+				id:  id1.String(),
 			},
 			want: entity.DeleteMemberResponse{
-				ID: id1.String(),
+				ID:       id1.String(),
 				Response: response.OK,
 			},
 			wantErr: false,
@@ -404,10 +402,10 @@ func TestDeleteMember(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				id: id2.String(),
+				id:  id2.String(),
 			},
 			want: entity.DeleteMemberResponse{
-				ID: id2.String(),
+				ID:       id2.String(),
 				Response: response.OK,
 			},
 			wantErr: false,
@@ -427,4 +425,3 @@ func TestDeleteMember(t *testing.T) {
 		})
 	}
 }
-
