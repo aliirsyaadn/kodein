@@ -1,0 +1,4 @@
+INSERT INTO project (id, member_id, name, description, technology, url) VALUES
+('18acb8ff-4e14-4b80-a329-b6bd8d3f2dc9', '3d1dd199-a913-4063-b4f8-b50e3c200a1c', 'Proyekin', 'Freelance application', 'MongoDB, ExpressJS ReactJS, NodeJS', 'proyekin.id'),
+('e4a9b5a1-423c-40a3-8074-d4a98360ae8b', '3d1dd199-a913-4063-b4f8-b50e3c200a1c', 'Kodein', 'Free Learning Platform from Zero to Mastery', 'Postgres, Golang, Svelte', 'kodein.id'),
+('f6b03d09-60f5-40dc-8518-30ef1c78d337', 'd4cfb592-8c46-4fb7-9623-fcb2cb425dfc', 'Money Management', 'Platform for managing money', 'FaunaDB, Stripe, Firebase, Vue', 'monman.com')

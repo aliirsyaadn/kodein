@@ -4,10 +4,64 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+type DifficultyType string
+
+const (
+	DifficultyTypeEasy   DifficultyType = "easy"
+	DifficultyTypeNormal DifficultyType = "normal"
+	DifficultyTypeHard   DifficultyType = "hard"
+	DifficultyTypeInsane DifficultyType = "insane"
+)
+
+func (e *DifficultyType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = DifficultyType(s)
+	case string:
+		*e = DifficultyType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for DifficultyType: %T", src)
+	}
+	return nil
+}
+
+type LanguageType string
+
+const (
+	LanguageTypePython LanguageType = "python"
+	LanguageTypeGo     LanguageType = "go"
+	LanguageTypeJs     LanguageType = "js"
+)
+
+func (e *LanguageType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = LanguageType(s)
+	case string:
+		*e = LanguageType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for LanguageType: %T", src)
+	}
+	return nil
+}
+
+type Attempt struct {
+	ID        uuid.UUID    `json:"id"`
+	MemberID  uuid.UUID    `json:"member_id"`
+	ProblemID uuid.UUID    `json:"problem_id"`
+	Language  LanguageType `json:"language"`
+	IsSolved  bool         `json:"is_solved"`
+	Score     int16        `json:"score"`
+	Code      string       `json:"code"`
+	CreateAt  time.Time    `json:"create_at"`
+	UpdateAt  time.Time    `json:"update_at"`
+}
 
 type Member struct {
 	ID       uuid.UUID      `json:"id"`
@@ -20,4 +74,26 @@ type Member struct {
 	Linkedin sql.NullString `json:"linkedin"`
 	CreateAt time.Time      `json:"create_at"`
 	UpdateAt time.Time      `json:"update_at"`
+}
+
+type Problem struct {
+	ID          uuid.UUID      `json:"id"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Category    string         `json:"category"`
+	Difficulty  DifficultyType `json:"difficulty"`
+	GraderCode  string         `json:"grader_code"`
+	CreateAt    time.Time      `json:"create_at"`
+	UpdateAt    time.Time      `json:"update_at"`
+}
+
+type Project struct {
+	ID          uuid.UUID      `json:"id"`
+	MemberID    uuid.UUID      `json:"member_id"`
+	Name        string         `json:"name"`
+	Description sql.NullString `json:"description"`
+	Technology  string         `json:"technology"`
+	Url         string         `json:"url"`
+	CreateAt    time.Time      `json:"create_at"`
+	UpdateAt    time.Time      `json:"update_at"`
 }

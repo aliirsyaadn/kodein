@@ -41,6 +41,7 @@ migrate-down:
 	@echo -n "$(NOW) down migrating app... "
 	@go run ./cmd/migration/main.go -cmd=seed -down
 	@go run ./cmd/migration/main.go -down
+	PGPASSWORD=$(DB_PASSWORD) psql -U $(DB_USER) $(DB_NAME) -h $(DB_HOST) -p $(DB_PORT) -f files/sql/drop_types.sql
 	@echo "done"
 
 seed:
@@ -57,6 +58,8 @@ drop:
 	@echo "$(NOW) droping database... "
 	migrate -source file://files/sql/schemas \
 		-database postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL_MODE) drop
+
+	PGPASSWORD=$(DB_PASSWORD) psql -U $(DB_USER) $(DB_NAME) -h $(DB_HOST) -p $(DB_PORT) -f files/sql/drop_types.sql
 	@echo "done"
 
 sqlc:

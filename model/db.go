@@ -22,8 +22,23 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.deleteAttemptStmt, err = db.PrepareContext(ctx, deleteAttempt); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteAttempt: %w", err)
+	}
 	if q.deleteMemberStmt, err = db.PrepareContext(ctx, deleteMember); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteMember: %w", err)
+	}
+	if q.deleteProblemStmt, err = db.PrepareContext(ctx, deleteProblem); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteProblem: %w", err)
+	}
+	if q.deleteProjectStmt, err = db.PrepareContext(ctx, deleteProject); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteProject: %w", err)
+	}
+	if q.getAttemptByIDStmt, err = db.PrepareContext(ctx, getAttemptByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetAttemptByID: %w", err)
+	}
+	if q.getAttemptsByMemberIDStmt, err = db.PrepareContext(ctx, getAttemptsByMemberID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetAttemptsByMemberID: %w", err)
 	}
 	if q.getMemberByIDStmt, err = db.PrepareContext(ctx, getMemberByID); err != nil {
 		return nil, fmt.Errorf("error preparing query GetMemberByID: %w", err)
@@ -34,14 +49,44 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getMembersStmt, err = db.PrepareContext(ctx, getMembers); err != nil {
 		return nil, fmt.Errorf("error preparing query GetMembers: %w", err)
 	}
+	if q.getProblemByIDStmt, err = db.PrepareContext(ctx, getProblemByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProblemByID: %w", err)
+	}
+	if q.getProblemsStmt, err = db.PrepareContext(ctx, getProblems); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProblems: %w", err)
+	}
+	if q.getProjectByIDStmt, err = db.PrepareContext(ctx, getProjectByID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProjectByID: %w", err)
+	}
+	if q.getProjectsByMemberIDStmt, err = db.PrepareContext(ctx, getProjectsByMemberID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetProjectsByMemberID: %w", err)
+	}
+	if q.insertAttemptStmt, err = db.PrepareContext(ctx, insertAttempt); err != nil {
+		return nil, fmt.Errorf("error preparing query InsertAttempt: %w", err)
+	}
 	if q.insertMemberStmt, err = db.PrepareContext(ctx, insertMember); err != nil {
 		return nil, fmt.Errorf("error preparing query InsertMember: %w", err)
+	}
+	if q.insertProblemStmt, err = db.PrepareContext(ctx, insertProblem); err != nil {
+		return nil, fmt.Errorf("error preparing query InsertProblem: %w", err)
+	}
+	if q.insertProjectStmt, err = db.PrepareContext(ctx, insertProject); err != nil {
+		return nil, fmt.Errorf("error preparing query InsertProject: %w", err)
+	}
+	if q.updateAttemptStmt, err = db.PrepareContext(ctx, updateAttempt); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateAttempt: %w", err)
 	}
 	if q.updateMemberStmt, err = db.PrepareContext(ctx, updateMember); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateMember: %w", err)
 	}
 	if q.updatePasswordMemberStmt, err = db.PrepareContext(ctx, updatePasswordMember); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePasswordMember: %w", err)
+	}
+	if q.updateProblemStmt, err = db.PrepareContext(ctx, updateProblem); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateProblem: %w", err)
+	}
+	if q.updateProjectStmt, err = db.PrepareContext(ctx, updateProject); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateProject: %w", err)
 	}
 	if q.updateSosmedMemberStmt, err = db.PrepareContext(ctx, updateSosmedMember); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateSosmedMember: %w", err)
@@ -51,9 +96,34 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.deleteAttemptStmt != nil {
+		if cerr := q.deleteAttemptStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteAttemptStmt: %w", cerr)
+		}
+	}
 	if q.deleteMemberStmt != nil {
 		if cerr := q.deleteMemberStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteMemberStmt: %w", cerr)
+		}
+	}
+	if q.deleteProblemStmt != nil {
+		if cerr := q.deleteProblemStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteProblemStmt: %w", cerr)
+		}
+	}
+	if q.deleteProjectStmt != nil {
+		if cerr := q.deleteProjectStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteProjectStmt: %w", cerr)
+		}
+	}
+	if q.getAttemptByIDStmt != nil {
+		if cerr := q.getAttemptByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getAttemptByIDStmt: %w", cerr)
+		}
+	}
+	if q.getAttemptsByMemberIDStmt != nil {
+		if cerr := q.getAttemptsByMemberIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getAttemptsByMemberIDStmt: %w", cerr)
 		}
 	}
 	if q.getMemberByIDStmt != nil {
@@ -71,9 +141,49 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getMembersStmt: %w", cerr)
 		}
 	}
+	if q.getProblemByIDStmt != nil {
+		if cerr := q.getProblemByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProblemByIDStmt: %w", cerr)
+		}
+	}
+	if q.getProblemsStmt != nil {
+		if cerr := q.getProblemsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProblemsStmt: %w", cerr)
+		}
+	}
+	if q.getProjectByIDStmt != nil {
+		if cerr := q.getProjectByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProjectByIDStmt: %w", cerr)
+		}
+	}
+	if q.getProjectsByMemberIDStmt != nil {
+		if cerr := q.getProjectsByMemberIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getProjectsByMemberIDStmt: %w", cerr)
+		}
+	}
+	if q.insertAttemptStmt != nil {
+		if cerr := q.insertAttemptStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing insertAttemptStmt: %w", cerr)
+		}
+	}
 	if q.insertMemberStmt != nil {
 		if cerr := q.insertMemberStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing insertMemberStmt: %w", cerr)
+		}
+	}
+	if q.insertProblemStmt != nil {
+		if cerr := q.insertProblemStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing insertProblemStmt: %w", cerr)
+		}
+	}
+	if q.insertProjectStmt != nil {
+		if cerr := q.insertProjectStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing insertProjectStmt: %w", cerr)
+		}
+	}
+	if q.updateAttemptStmt != nil {
+		if cerr := q.updateAttemptStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateAttemptStmt: %w", cerr)
 		}
 	}
 	if q.updateMemberStmt != nil {
@@ -84,6 +194,16 @@ func (q *Queries) Close() error {
 	if q.updatePasswordMemberStmt != nil {
 		if cerr := q.updatePasswordMemberStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updatePasswordMemberStmt: %w", cerr)
+		}
+	}
+	if q.updateProblemStmt != nil {
+		if cerr := q.updateProblemStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateProblemStmt: %w", cerr)
+		}
+	}
+	if q.updateProjectStmt != nil {
+		if cerr := q.updateProjectStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateProjectStmt: %w", cerr)
 		}
 	}
 	if q.updateSosmedMemberStmt != nil {
@@ -128,29 +248,59 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                       DBTX
-	tx                       *sql.Tx
-	deleteMemberStmt         *sql.Stmt
-	getMemberByIDStmt        *sql.Stmt
-	getMemberByUsernameStmt  *sql.Stmt
-	getMembersStmt           *sql.Stmt
-	insertMemberStmt         *sql.Stmt
-	updateMemberStmt         *sql.Stmt
-	updatePasswordMemberStmt *sql.Stmt
-	updateSosmedMemberStmt   *sql.Stmt
+	db                        DBTX
+	tx                        *sql.Tx
+	deleteAttemptStmt         *sql.Stmt
+	deleteMemberStmt          *sql.Stmt
+	deleteProblemStmt         *sql.Stmt
+	deleteProjectStmt         *sql.Stmt
+	getAttemptByIDStmt        *sql.Stmt
+	getAttemptsByMemberIDStmt *sql.Stmt
+	getMemberByIDStmt         *sql.Stmt
+	getMemberByUsernameStmt   *sql.Stmt
+	getMembersStmt            *sql.Stmt
+	getProblemByIDStmt        *sql.Stmt
+	getProblemsStmt           *sql.Stmt
+	getProjectByIDStmt        *sql.Stmt
+	getProjectsByMemberIDStmt *sql.Stmt
+	insertAttemptStmt         *sql.Stmt
+	insertMemberStmt          *sql.Stmt
+	insertProblemStmt         *sql.Stmt
+	insertProjectStmt         *sql.Stmt
+	updateAttemptStmt         *sql.Stmt
+	updateMemberStmt          *sql.Stmt
+	updatePasswordMemberStmt  *sql.Stmt
+	updateProblemStmt         *sql.Stmt
+	updateProjectStmt         *sql.Stmt
+	updateSosmedMemberStmt    *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                       tx,
-		tx:                       tx,
-		deleteMemberStmt:         q.deleteMemberStmt,
-		getMemberByIDStmt:        q.getMemberByIDStmt,
-		getMemberByUsernameStmt:  q.getMemberByUsernameStmt,
-		getMembersStmt:           q.getMembersStmt,
-		insertMemberStmt:         q.insertMemberStmt,
-		updateMemberStmt:         q.updateMemberStmt,
-		updatePasswordMemberStmt: q.updatePasswordMemberStmt,
-		updateSosmedMemberStmt:   q.updateSosmedMemberStmt,
+		db:                        tx,
+		tx:                        tx,
+		deleteAttemptStmt:         q.deleteAttemptStmt,
+		deleteMemberStmt:          q.deleteMemberStmt,
+		deleteProblemStmt:         q.deleteProblemStmt,
+		deleteProjectStmt:         q.deleteProjectStmt,
+		getAttemptByIDStmt:        q.getAttemptByIDStmt,
+		getAttemptsByMemberIDStmt: q.getAttemptsByMemberIDStmt,
+		getMemberByIDStmt:         q.getMemberByIDStmt,
+		getMemberByUsernameStmt:   q.getMemberByUsernameStmt,
+		getMembersStmt:            q.getMembersStmt,
+		getProblemByIDStmt:        q.getProblemByIDStmt,
+		getProblemsStmt:           q.getProblemsStmt,
+		getProjectByIDStmt:        q.getProjectByIDStmt,
+		getProjectsByMemberIDStmt: q.getProjectsByMemberIDStmt,
+		insertAttemptStmt:         q.insertAttemptStmt,
+		insertMemberStmt:          q.insertMemberStmt,
+		insertProblemStmt:         q.insertProblemStmt,
+		insertProjectStmt:         q.insertProjectStmt,
+		updateAttemptStmt:         q.updateAttemptStmt,
+		updateMemberStmt:          q.updateMemberStmt,
+		updatePasswordMemberStmt:  q.updatePasswordMemberStmt,
+		updateProblemStmt:         q.updateProblemStmt,
+		updateProjectStmt:         q.updateProjectStmt,
+		updateSosmedMemberStmt:    q.updateSosmedMemberStmt,
 	}
 }
