@@ -10,6 +10,7 @@ import (
 	"github.com/aliirsyaadn/kodein/handlers"
 	"github.com/aliirsyaadn/kodein/model"
 	"github.com/aliirsyaadn/kodein/services/member"
+	"github.com/aliirsyaadn/kodein/services/problem"
 	"github.com/aliirsyaadn/kodein/services/project"
 	fiber "github.com/gofiber/fiber/v2"
 )
@@ -24,6 +25,10 @@ func SetUpRouter(app *fiber.App, model *model.Queries) {
 	// Project
 	projectService := project.NewService(model)
 	handlers.NewProjectHandler(projectService).Register(api)
+
+	// Problem
+	problemService := problem.NewService(model)
+	handlers.NewProblemHandler(problemService).Register(api)
 
 	api.Post("/grade", Grade)
 }
