@@ -78,9 +78,9 @@ func (s *service) CreateProblem(ctx context.Context, arg entity.CreateProblemReq
 	dataInsert := model.InsertProblemParams{
 		Name:        arg.Data.Name,
 		Description: arg.Data.Description,
-		Category: arg.Data.Category,
-		Difficulty: arg.Data.Difficulty,
-		GraderCode: arg.Data.GraderCode,
+		Category:    arg.Data.Category,
+		Difficulty:  arg.Data.Difficulty,
+		GraderCode:  arg.Data.GraderCode,
 	}
 
 	data, err := s.r.InsertProblem(ctx, dataInsert)
@@ -106,12 +106,12 @@ func (s *service) UpdateProblem(ctx context.Context, arg entity.UpdateProblemReq
 	}
 
 	dataUpdate := model.UpdateProblemParams{
-		ID: idParsed,
+		ID:          idParsed,
 		Name:        arg.Data.Name.String,
 		Description: arg.Data.Description.String,
-		Category: arg.Data.Category.String,
-		Difficulty: model.DifficultyTypeInsane,
-		GraderCode: arg.Data.GraderCode.String,
+		Category:    arg.Data.Category.String,
+		Difficulty:  model.DifficultyTypeInsane,
+		GraderCode:  arg.Data.GraderCode.String,
 	}
 
 	data, err := s.r.UpdateProblem(ctx, dataUpdate)

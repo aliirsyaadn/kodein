@@ -9,6 +9,7 @@ import (
 
 	"github.com/aliirsyaadn/kodein/handlers"
 	"github.com/aliirsyaadn/kodein/model"
+	"github.com/aliirsyaadn/kodein/services/attempt"
 	"github.com/aliirsyaadn/kodein/services/member"
 	"github.com/aliirsyaadn/kodein/services/problem"
 	"github.com/aliirsyaadn/kodein/services/project"
@@ -21,7 +22,7 @@ func SetUpRouter(app *fiber.App, model *model.Queries) {
 	// Member
 	memberService := member.NewService(model)
 	handlers.NewMemberHandler(memberService).Register(api)
-	
+
 	// Project
 	projectService := project.NewService(model)
 	handlers.NewProjectHandler(projectService).Register(api)
@@ -29,6 +30,10 @@ func SetUpRouter(app *fiber.App, model *model.Queries) {
 	// Problem
 	problemService := problem.NewService(model)
 	handlers.NewProblemHandler(problemService).Register(api)
+
+	// Attempt
+	attemptService := attempt.NewService(model)
+	handlers.NewAttemptHandler(attemptService).Register(api)
 
 	api.Post("/grade", Grade)
 }

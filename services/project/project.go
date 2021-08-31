@@ -111,7 +111,7 @@ func (s *service) UpdateProject(ctx context.Context, arg entity.UpdateProjectReq
 	}
 
 	dataUpdate := model.UpdateProjectParams{
-		ID: idParsed,
+		ID:          idParsed,
 		Name:        arg.Data.Name.String,
 		Description: arg.Data.Description.NullString,
 		Technology:  arg.Data.Technology.String,

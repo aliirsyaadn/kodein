@@ -114,24 +114,20 @@ func (q *Queries) InsertAttempt(ctx context.Context, arg InsertAttemptParams) (A
 }
 
 const updateAttempt = `-- name: UpdateAttempt :one
-UPDATE attempt SET member_id = $2, problem_id = $3, language = $4, is_solved = $5, score = $6, code = $7 WHERE id = $1 RETURNING id, member_id, problem_id, language, is_solved, score, code, create_at, update_at
+UPDATE attempt SET language = $2, is_solved = $3, score = $4, code = $5 WHERE id = $1 RETURNING id, member_id, problem_id, language, is_solved, score, code, create_at, update_at
 `
 
 type UpdateAttemptParams struct {
-	ID        uuid.UUID    `json:"id"`
-	MemberID  uuid.UUID    `json:"member_id"`
-	ProblemID uuid.UUID    `json:"problem_id"`
-	Language  LanguageType `json:"language"`
-	IsSolved  bool         `json:"is_solved"`
-	Score     int16        `json:"score"`
-	Code      string       `json:"code"`
+	ID       uuid.UUID    `json:"id"`
+	Language LanguageType `json:"language"`
+	IsSolved bool         `json:"is_solved"`
+	Score    int16        `json:"score"`
+	Code     string       `json:"code"`
 }
 
 func (q *Queries) UpdateAttempt(ctx context.Context, arg UpdateAttemptParams) (Attempt, error) {
 	row := q.queryRow(ctx, q.updateAttemptStmt, updateAttempt,
 		arg.ID,
-		arg.MemberID,
-		arg.ProblemID,
 		arg.Language,
 		arg.IsSolved,
 		arg.Score,

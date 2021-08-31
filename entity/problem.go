@@ -27,8 +27,8 @@ type CreateProblemResponse struct {
 type UpdateProblem struct {
 	Name        null.String `json:"name"`
 	Description null.String `json:"description"`
-	Category 	null.String `json:"category"`
-	Difficulty  null.String `json:"technology"`
+	Category    null.String `json:"category"`
+	Difficulty  null.String `json:"difficulty"`
 	Url         null.String `json:"url"`
 	GraderCode  null.String `json:"grader_code"`
 }
