@@ -27,6 +27,12 @@ run:
 	@echo "$(NOW) starting app... "
 	@go run ./cmd/mainapp/main.go
 
+db-up:
+	@sudo docker-compose up -d
+
+db-down:
+	@sudo docker-compose down
+
 migration:
 	@read -p "Enter migration name: " name; \
 	migrate create -ext sql -dir files/sql/schemas $$name; \

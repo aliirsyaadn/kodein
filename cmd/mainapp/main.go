@@ -31,14 +31,15 @@ func main() {
 	model := db.ConnectDB(cfg.DB)
 	defer model.Close()
 
-	// Connect Redis
-	rdb := redis.ConnectRedis(cfg.REDIS)
+	// Connect Redis Cache
+	rc := redis.NewCacheWithClient(cfg.REDIS)
+	defer rc.Close()
 
 	// Initiate Middleware
 	app.Use(logger.New())
 
 	// SetUp Router
-	router.SetUpRouter(app, model, rdb)
+	router.SetUpRouter(app, model, rc)
 
 	log.InfoDetail(mainTag, "app started at :%s", cfg.APP.Port)
 	log.FatalDetail(mainTag, "Aborting...", app.Listen(":"+cfg.APP.Port))

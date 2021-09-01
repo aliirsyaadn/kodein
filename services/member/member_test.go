@@ -2,15 +2,19 @@ package member
 
 import (
 	"context"
+	"encoding/json"
 	"reflect"
 	"testing"
+	"time"
 
+	"github.com/go-redis/redismock/v8"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/guregu/null.v3"
 
 	"github.com/aliirsyaadn/kodein/entity"
+	"github.com/aliirsyaadn/kodein/internal/redis"
 	"github.com/aliirsyaadn/kodein/internal/response"
 	"github.com/aliirsyaadn/kodein/model"
 	mock "github.com/aliirsyaadn/kodein/services/member/mock"
@@ -40,13 +44,19 @@ func TestGetMembers(t *testing.T) {
 		},
 	}, nil)
 
-	memberService := NewService(mockRepo)
+	redisClient, mockRedis := redismock.NewClientMock()
+
+	mockRedis.ExpectGet("member:s").RedisNil()
+
+	redisCache := redis.NewCache(redisClient)
+	memberService := NewService(mockRepo, redisCache)
 
 	members, err := memberService.GetMembers(context.Background())
 
 	assert.Nil(t, err)
 	assert.NotNil(t, members)
 	assert.Equal(t, len(members.Data), 2)
+	assert.NotNil(t, mockRedis.ExpectationsWereMet())
 }
 
 func TestGetMemberByID(t *testing.T) {
@@ -76,8 +86,16 @@ func TestGetMemberByID(t *testing.T) {
 
 	mockRepo.EXPECT().GetMemberByID(context.Background(), id2).Return(rtr2, nil)
 
+	redisClient, mockRedis := redismock.NewClientMock()
+	
+	mockRedis.ExpectGet("member:"+id1.String()).RedisNil()
+	mockRedis.ExpectGet("member:"+id2.String()).RedisNil()
+
+	redisCache := redis.NewCache(redisClient)
+
 	type fields struct {
 		r Repository
+		rc redis.RedisCache
 	}
 	type args struct {
 		ctx context.Context
@@ -94,6 +112,7 @@ func TestGetMemberByID(t *testing.T) {
 			name: "1",
 			fields: fields{
 				r: mockRepo,
+				rc: redisCache,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -109,6 +128,7 @@ func TestGetMemberByID(t *testing.T) {
 			name: "2",
 			fields: fields{
 				r: mockRepo,
+				rc: redisCache,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -123,7 +143,7 @@ func TestGetMemberByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewService(tt.fields.r)
+			s := NewService(tt.fields.r, tt.fields.rc)
 
 			got, err := s.GetMemberByID(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -135,6 +155,8 @@ func TestGetMemberByID(t *testing.T) {
 			}
 		})
 	}
+
+	assert.NotNil(t, mockRedis.ExpectationsWereMet())
 }
 
 func TestCreateMember(t *testing.T) {
@@ -176,8 +198,19 @@ func TestCreateMember(t *testing.T) {
 
 	mockRepo.EXPECT().InsertMember(context.Background(), dataInsert2).Return(rtr2, nil)
 
+	redisClient, mockRedis := redismock.NewClientMock()
+
+	value1, _ := json.Marshal(rtr1) 
+	value2, _ := json.Marshal(rtr2) 
+	
+	mockRedis.ExpectSet("member:"+id1.String(), value1, 60 * time.Second)
+	mockRedis.ExpectSet("member:"+id2.String(), value2, 60 * time.Second)
+
+	redisCache := redis.NewCache(redisClient)
+
 	type fields struct {
 		r Repository
+		rc redis.RedisCache
 	}
 	type args struct {
 		ctx context.Context
@@ -194,6 +227,7 @@ func TestCreateMember(t *testing.T) {
 			name: "1",
 			fields: fields{
 				r: mockRepo,
+				rc: redisCache,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -211,6 +245,7 @@ func TestCreateMember(t *testing.T) {
 			name: "2",
 			fields: fields{
 				r: mockRepo,
+				rc: redisCache,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -227,7 +262,7 @@ func TestCreateMember(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewService(tt.fields.r)
+			s := NewService(tt.fields.r, tt.fields.rc)
 			got, err := s.CreateMember(tt.args.ctx, tt.args.arg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("service.CreateMember() error = %v, wantErr %v", err, tt.wantErr)
@@ -238,6 +273,7 @@ func TestCreateMember(t *testing.T) {
 			}
 		})
 	}
+	assert.NotNil(t, mockRedis.ExpectationsWereMet())
 }
 
 func TestUpdateMember(t *testing.T) {
@@ -281,8 +317,19 @@ func TestUpdateMember(t *testing.T) {
 
 	mockRepo.EXPECT().UpdateMember(context.Background(), dataUpdate2).Return(rtr2, nil)
 
+	redisClient, mockRedis := redismock.NewClientMock()
+	
+	value1, _ := json.Marshal(rtr1) 
+	value2, _ := json.Marshal(rtr2) 
+	
+	mockRedis.ExpectSet("member:"+id1.String(), value1, 60 * time.Second)
+	mockRedis.ExpectSet("member:"+id2.String(), value2, 60 * time.Second)
+
+	redisCache := redis.NewCache(redisClient)
+
 	type fields struct {
 		r Repository
+		rc redis.RedisCache
 	}
 	type args struct {
 		ctx context.Context
@@ -300,6 +347,7 @@ func TestUpdateMember(t *testing.T) {
 			name: "1",
 			fields: fields{
 				r: mockRepo,
+				rc: redisCache,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -322,6 +370,7 @@ func TestUpdateMember(t *testing.T) {
 			name: "2",
 			fields: fields{
 				r: mockRepo,
+				rc: redisCache,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -343,7 +392,7 @@ func TestUpdateMember(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewService(tt.fields.r)
+			s := NewService(tt.fields.r, tt.fields.rc)
 			got, err := s.UpdateMember(tt.args.ctx, tt.args.arg, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("service.UpdateMember() error = %v, wantErr %v", err, tt.wantErr)
@@ -366,8 +415,16 @@ func TestDeleteMember(t *testing.T) {
 	mockRepo.EXPECT().DeleteMember(context.Background(), id1).Return(nil)
 	mockRepo.EXPECT().DeleteMember(context.Background(), id2).Return(nil)
 
+	redisClient, mockRedis := redismock.NewClientMock()
+	
+	mockRedis.ExpectDel("member:"+id1.String())
+	mockRedis.ExpectDel("member:"+id2.String())
+
+	redisCache := redis.NewCache(redisClient)
+
 	type fields struct {
 		r Repository
+		rc redis.RedisCache
 	}
 	type args struct {
 		ctx context.Context
@@ -384,6 +441,7 @@ func TestDeleteMember(t *testing.T) {
 			name: "1",
 			fields: fields{
 				r: mockRepo,
+				rc: redisCache,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -399,6 +457,7 @@ func TestDeleteMember(t *testing.T) {
 			name: "2",
 			fields: fields{
 				r: mockRepo,
+				rc: redisCache,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -413,7 +472,7 @@ func TestDeleteMember(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewService(tt.fields.r)
+			s := NewService(tt.fields.r, tt.fields.rc)
 			got, err := s.DeleteMember(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("service.DeleteMember() error = %v, wantErr %v", err, tt.wantErr)
