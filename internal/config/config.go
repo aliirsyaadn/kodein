@@ -15,10 +15,16 @@ func LoadConfig() (*Config, error) {
 
 	redisConfig := loadConfigRedis()
 
+	nsqProducerConfig := loadConfigNSQProducer()
+
+	nsqConsumerConfig := LoadConfigNSQConsumer()
+
 	config := &Config{
 		DB:    dbConfig,
 		REDIS: redisConfig,
 		APP:   appConfig,
+		PRODUCER: nsqProducerConfig,
+		CONSUMER: nsqConsumerConfig,
 	}
 	return config, nil
 }
@@ -42,6 +48,30 @@ func loadConfigRedis() RedisConfig {
 		DB:       getEnv("REDIS_DB", "0"),
 	}
 	return redisConfig
+}
+
+func LoadConfigNSQConsumer() NSQConsumerConfig {
+	nsqConsumerConfig := NSQConsumerConfig{
+		ServerConfig: ServerConfig{
+			Host: getEnv("NSQ_HOST", "127.0.0.1"),
+			Port: getEnv("NSQ_PORT", "4161"),
+		},
+		MaxAttempts: 10,
+		MaxInFlight: 10,
+
+	}
+	return nsqConsumerConfig
+}
+
+func loadConfigNSQProducer() NSQProducerConfig {
+	nsqProducerConfig := NSQProducerConfig{
+		ServerConfig: ServerConfig{
+			Host: getEnv("NSQ_HOST", "127.0.0.1"),
+			Port: getEnv("NSQ_PORT", "4150"),
+		},
+
+	}
+	return nsqProducerConfig
 }
 
 func getEnv(key string, def string) string {

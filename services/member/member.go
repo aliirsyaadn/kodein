@@ -2,7 +2,6 @@ package member
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -35,8 +34,8 @@ type Repository interface {
 }
 
 type service struct {
-	r Repository
-	rc  redis.RedisCache
+	r  Repository
+	rc redis.RedisCache
 }
 
 func NewService(r Repository, rc redis.RedisCache) Service {
@@ -46,10 +45,10 @@ func NewService(r Repository, rc redis.RedisCache) Service {
 func (s *service) GetMembers(ctx context.Context) (entity.ListMemberResponse, error) {
 	var res entity.ListMemberResponse
 	var data []model.Member
-	
+
 	// Get Data from cache
-	dataRedis := s.rc.Get(ctx, member, "s")
-	if dataRedis == "" {
+	err := s.rc.GetJSON(ctx, member, "s", &data)
+	if err != nil {
 		data, err := s.r.GetMembers(ctx)
 		if err != nil {
 			log.ErrorDetail(memberTag, "error GetAllMember from DB: %v", err)
@@ -60,14 +59,8 @@ func (s *service) GetMembers(ctx context.Context) (entity.ListMemberResponse, er
 			log.WarnDetail(memberTag, "error set redis key:%s:%s", member, "s")
 		}
 	} else {
-		err := json.Unmarshal([]byte(dataRedis), &data)
-		if err != nil {
-			log.ErrorDetail(memberTag, "error parse json: %v", err)
-			return res, err
-		}
 		log.DebugDetail(memberTag, "%v", data)
 	}
-	
 
 	res = entity.ListMemberResponse{
 		Data:     data,
@@ -82,8 +75,8 @@ func (s *service) GetMemberByID(ctx context.Context, id string) (entity.GetMembe
 	var data model.Member
 
 	// Get data from cache
-	dataRedis := s.rc.Get(ctx, member, id)
-	if dataRedis == "" {
+	err := s.rc.GetJSON(ctx, member, id, &data)
+	if err != nil {
 		idParsed, err := uuid.Parse(id)
 		if err != nil {
 			log.ErrorDetail(memberTag, "error parse uuid: %v", err)
@@ -102,11 +95,6 @@ func (s *service) GetMemberByID(ctx context.Context, id string) (entity.GetMembe
 		}
 
 	} else {
-		err := json.Unmarshal([]byte(dataRedis), &data)
-		if err != nil {
-			log.ErrorDetail(memberTag, "error parse json: %v", err)
-			return res, err
-		}
 		log.DebugDetail(memberTag, "%v", data)
 	}
 
@@ -194,7 +182,6 @@ func (s *service) DeleteMember(ctx context.Context, id string) (res entity.Delet
 
 	// Delete data in cache
 	s.rc.Del(ctx, member, id)
-
 
 	res = entity.DeleteMemberResponse{
 		ID:       id,

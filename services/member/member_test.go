@@ -44,6 +44,8 @@ func TestGetMembers(t *testing.T) {
 		},
 	}, nil)
 
+	mockRepo.EXPECT()
+
 	redisClient, mockRedis := redismock.NewClientMock()
 
 	mockRedis.ExpectGet("member:s").RedisNil()
@@ -87,14 +89,14 @@ func TestGetMemberByID(t *testing.T) {
 	mockRepo.EXPECT().GetMemberByID(context.Background(), id2).Return(rtr2, nil)
 
 	redisClient, mockRedis := redismock.NewClientMock()
-	
-	mockRedis.ExpectGet("member:"+id1.String()).RedisNil()
-	mockRedis.ExpectGet("member:"+id2.String()).RedisNil()
+
+	mockRedis.ExpectGet("member:" + id1.String()).RedisNil()
+	mockRedis.ExpectGet("member:" + id2.String()).RedisNil()
 
 	redisCache := redis.NewCache(redisClient)
 
 	type fields struct {
-		r Repository
+		r  Repository
 		rc redis.RedisCache
 	}
 	type args struct {
@@ -111,7 +113,7 @@ func TestGetMemberByID(t *testing.T) {
 		{
 			name: "1",
 			fields: fields{
-				r: mockRepo,
+				r:  mockRepo,
 				rc: redisCache,
 			},
 			args: args{
@@ -127,7 +129,7 @@ func TestGetMemberByID(t *testing.T) {
 		{
 			name: "2",
 			fields: fields{
-				r: mockRepo,
+				r:  mockRepo,
 				rc: redisCache,
 			},
 			args: args{
@@ -200,16 +202,16 @@ func TestCreateMember(t *testing.T) {
 
 	redisClient, mockRedis := redismock.NewClientMock()
 
-	value1, _ := json.Marshal(rtr1) 
-	value2, _ := json.Marshal(rtr2) 
-	
-	mockRedis.ExpectSet("member:"+id1.String(), value1, 60 * time.Second)
-	mockRedis.ExpectSet("member:"+id2.String(), value2, 60 * time.Second)
+	value1, _ := json.Marshal(rtr1)
+	value2, _ := json.Marshal(rtr2)
+
+	mockRedis.ExpectSet("member:"+id1.String(), value1, 60*time.Second)
+	mockRedis.ExpectSet("member:"+id2.String(), value2, 60*time.Second)
 
 	redisCache := redis.NewCache(redisClient)
 
 	type fields struct {
-		r Repository
+		r  Repository
 		rc redis.RedisCache
 	}
 	type args struct {
@@ -226,7 +228,7 @@ func TestCreateMember(t *testing.T) {
 		{
 			name: "1",
 			fields: fields{
-				r: mockRepo,
+				r:  mockRepo,
 				rc: redisCache,
 			},
 			args: args{
@@ -244,7 +246,7 @@ func TestCreateMember(t *testing.T) {
 		{
 			name: "2",
 			fields: fields{
-				r: mockRepo,
+				r:  mockRepo,
 				rc: redisCache,
 			},
 			args: args{
@@ -318,17 +320,17 @@ func TestUpdateMember(t *testing.T) {
 	mockRepo.EXPECT().UpdateMember(context.Background(), dataUpdate2).Return(rtr2, nil)
 
 	redisClient, mockRedis := redismock.NewClientMock()
-	
-	value1, _ := json.Marshal(rtr1) 
-	value2, _ := json.Marshal(rtr2) 
-	
-	mockRedis.ExpectSet("member:"+id1.String(), value1, 60 * time.Second)
-	mockRedis.ExpectSet("member:"+id2.String(), value2, 60 * time.Second)
+
+	value1, _ := json.Marshal(rtr1)
+	value2, _ := json.Marshal(rtr2)
+
+	mockRedis.ExpectSet("member:"+id1.String(), value1, 60*time.Second)
+	mockRedis.ExpectSet("member:"+id2.String(), value2, 60*time.Second)
 
 	redisCache := redis.NewCache(redisClient)
 
 	type fields struct {
-		r Repository
+		r  Repository
 		rc redis.RedisCache
 	}
 	type args struct {
@@ -346,7 +348,7 @@ func TestUpdateMember(t *testing.T) {
 		{
 			name: "1",
 			fields: fields{
-				r: mockRepo,
+				r:  mockRepo,
 				rc: redisCache,
 			},
 			args: args{
@@ -369,7 +371,7 @@ func TestUpdateMember(t *testing.T) {
 		{
 			name: "2",
 			fields: fields{
-				r: mockRepo,
+				r:  mockRepo,
 				rc: redisCache,
 			},
 			args: args{
@@ -416,14 +418,14 @@ func TestDeleteMember(t *testing.T) {
 	mockRepo.EXPECT().DeleteMember(context.Background(), id2).Return(nil)
 
 	redisClient, mockRedis := redismock.NewClientMock()
-	
-	mockRedis.ExpectDel("member:"+id1.String())
-	mockRedis.ExpectDel("member:"+id2.String())
+
+	mockRedis.ExpectDel("member:" + id1.String())
+	mockRedis.ExpectDel("member:" + id2.String())
 
 	redisCache := redis.NewCache(redisClient)
 
 	type fields struct {
-		r Repository
+		r  Repository
 		rc redis.RedisCache
 	}
 	type args struct {
@@ -440,7 +442,7 @@ func TestDeleteMember(t *testing.T) {
 		{
 			name: "1",
 			fields: fields{
-				r: mockRepo,
+				r:  mockRepo,
 				rc: redisCache,
 			},
 			args: args{
@@ -456,7 +458,7 @@ func TestDeleteMember(t *testing.T) {
 		{
 			name: "2",
 			fields: fields{
-				r: mockRepo,
+				r:  mockRepo,
 				rc: redisCache,
 			},
 			args: args{

@@ -2,13 +2,13 @@ package attempt
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
 
 	"github.com/aliirsyaadn/kodein/entity"
 	"github.com/aliirsyaadn/kodein/internal/log"
+	"github.com/aliirsyaadn/kodein/internal/nsq"
 	"github.com/aliirsyaadn/kodein/internal/redis"
 	"github.com/aliirsyaadn/kodein/internal/response"
 	"github.com/aliirsyaadn/kodein/model"
@@ -36,14 +36,16 @@ type Repository interface {
 }
 
 type service struct {
-	r   Repository
-	rc  redis.RedisCache
+	r  Repository
+	rc redis.RedisCache
+	nsq nsq.Producer
 }
 
-func NewService(r Repository, rc redis.RedisCache) Service {
+func NewService(r Repository, rc redis.RedisCache, nsq nsq.Producer) Service {
 	return &service{
 		r,
 		rc,
+		nsq,
 	}
 }
 
@@ -52,8 +54,8 @@ func (s *service) GetAttemptsByMemberID(ctx context.Context, memberID string) (e
 	var data []model.Attempt
 
 	// Get Data from cache
-	dataRedis := s.rc.Get(ctx, attemptMember, memberID)
-	if dataRedis == "" {
+	err := s.rc.GetJSON(ctx, attemptMember, memberID, &data)
+	if err != nil {
 		memberIDParsed, err := uuid.Parse(memberID)
 		if err != nil {
 			log.ErrorDetail(attemptTag, "error parse uuid: %v", err)
@@ -70,14 +72,9 @@ func (s *service) GetAttemptsByMemberID(ctx context.Context, memberID string) (e
 			log.WarnDetail(attemptTag, "error set redis key:%s:%s", attemptMember, memberID)
 		}
 	} else {
-		err := json.Unmarshal([]byte(dataRedis), &data)
-		if err != nil {
-			log.ErrorDetail(attemptTag, "error parse json: %v", err)
-			return res, err
-		}
 		log.DebugDetail(attemptTag, "%v", data)
 	}
-	
+
 	res = entity.ListAttemptResponse{
 		Data:     data,
 		Response: response.OK,
@@ -91,8 +88,8 @@ func (s *service) GetAttemptByID(ctx context.Context, id string) (entity.GetAtte
 	var data model.Attempt
 
 	// Get data from cache
-	dataRedis := s.rc.Get(ctx, attempt, id)
-	if dataRedis == "" {
+	err := s.rc.GetJSON(ctx, attempt, id, &data)
+	if err != nil {
 		idParsed, err := uuid.Parse(id)
 		if err != nil {
 			log.ErrorDetail(attemptTag, "error parse uuid: %v", err)
@@ -112,11 +109,6 @@ func (s *service) GetAttemptByID(ctx context.Context, id string) (entity.GetAtte
 		}
 
 	} else {
-		err := json.Unmarshal([]byte(dataRedis), &data)
-		if err != nil {
-			log.ErrorDetail(attemptTag, "error parse json: %v", err)
-			return res, err
-		}
 		log.DebugDetail(attemptTag, "%v", data)
 	}
 
@@ -147,6 +139,11 @@ func (s *service) CreateAttempt(ctx context.Context, arg entity.CreateAttemptReq
 	ok := s.rc.SetJSON(ctx, attempt, data.ID.String(), data, expiredCache)
 	if !ok {
 		log.WarnDetail(attemptTag, "error set redis key:%s:%s", attempt, data.ID.String())
+	}
+
+	err = s.nsq.Publish(attempt, data)
+	if err != nil {
+		log.WarnDetail(attemptTag, "error Publish to MQ: %v", err)
 	}
 
 	res = entity.CreateAttemptResponse{

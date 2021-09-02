@@ -12,6 +12,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.10.2
+	github.com/nsqio/go-nsq v1.0.8 // indirect
 	github.com/stretchr/testify v1.7.0
 	google.golang.org/grpc v1.40.0
 	google.golang.org/protobuf v1.26.0

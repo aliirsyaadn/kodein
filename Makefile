@@ -87,4 +87,4 @@ test-services:
 	@go test ./services/... -v
 
 mock-repo:
-	@mockgen -source=./services/member/main.go -destination=./services/member/mock/mock_repository.go
+	@mockgen -source=./services/member/member.go -destination=./services/member/mock/mock_service.go

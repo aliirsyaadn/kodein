@@ -4,6 +4,8 @@ type Config struct {
 	DB    DBConfig
 	REDIS RedisConfig
 	APP   APPConfig
+	PRODUCER NSQProducerConfig
+	CONSUMER NSQConsumerConfig
 }
 
 type APPConfig struct {
@@ -23,4 +25,19 @@ type RedisConfig struct {
 	Address  string
 	Password string
 	DB       string
+}
+
+type NSQProducerConfig struct {
+	ServerConfig
+}
+
+type NSQConsumerConfig struct {
+	ServerConfig
+	MaxAttempts uint16
+	MaxInFlight int
+}
+
+type ServerConfig struct {
+	Host string
+	Port string
 }

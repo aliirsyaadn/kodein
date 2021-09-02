@@ -8,6 +8,7 @@ import (
 	"github.com/aliirsyaadn/kodein/internal/config"
 	"github.com/aliirsyaadn/kodein/internal/db"
 	"github.com/aliirsyaadn/kodein/internal/log"
+	"github.com/aliirsyaadn/kodein/internal/nsq"
 	"github.com/aliirsyaadn/kodein/internal/redis"
 	"github.com/aliirsyaadn/kodein/internal/router"
 )
@@ -35,11 +36,14 @@ func main() {
 	rc := redis.NewCacheWithClient(cfg.REDIS)
 	defer rc.Close()
 
+	// Init NSQ Producer
+	nsqProducer := nsq.NewProducer(cfg.PRODUCER)
+
 	// Initiate Middleware
 	app.Use(logger.New())
 
 	// SetUp Router
-	router.SetUpRouter(app, model, rc)
+	router.SetUpRouter(app, model, rc, nsqProducer)
 
 	log.InfoDetail(mainTag, "app started at :%s", cfg.APP.Port)
 	log.FatalDetail(mainTag, "Aborting...", app.Listen(":"+cfg.APP.Port))

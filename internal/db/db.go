@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/aliirsyaadn/kodein/internal/config"
 	"github.com/aliirsyaadn/kodein/internal/log"
@@ -12,7 +11,7 @@ import (
 const intDBTag = "InternalDBTag"
 
 func ConnectDB(dbConfig config.DBConfig) *model.Queries {
-	sqldb, err := sql.Open("postgres", fmt.Sprintf("dbname=%s user=%s password=%s sslmode=%s port=%s", dbConfig.DBName, dbConfig.User, dbConfig.Password, dbConfig.SSLMode, dbConfig.Port))
+	sqldb, err := sql.Open("postgres", ParseDSN(dbConfig))
 
 	if err != nil {
 		log.ErrorDetail(intDBTag, "error connect database: %v", err)

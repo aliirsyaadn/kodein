@@ -3,7 +3,9 @@ package redis
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
 	"time"
 
@@ -17,6 +19,7 @@ const redisTag = "InternalRedisTag"
 type RedisCache interface {
 	Close()
 	SetJSON(ctx context.Context, service string, id string, data interface{}, expired time.Duration) bool
+	GetJSON(ctx context.Context, service string, id string, destination interface{}) error
 	Get(ctx context.Context, service string, id string) string
 	Del(ctx context.Context, service string, id string)
 }
@@ -25,7 +28,7 @@ type redisCache struct {
 	client *redis.Client
 }
 
-func NewClient(redisConfig config.RedisConfig) *redis.Client{
+func NewClient(redisConfig config.RedisConfig) *redis.Client {
 	db, err := strconv.Atoi(redisConfig.DB)
 	if err != nil {
 		log.ErrorDetail(redisTag, "error convert string to int: %v", err)
@@ -50,14 +53,14 @@ func NewCache(client *redis.Client) RedisCache {
 	return &redisCache{client}
 }
 
-func (r *redisCache) Close(){
+func (r *redisCache) Close() {
 	r.client.Close()
 }
 
 func (r *redisCache) SetJSON(ctx context.Context, service string, id string, data interface{}, expired time.Duration) bool {
 	key := fmt.Sprintf("%s:%s", service, id)
-	
-	value, err := json.Marshal(data) 
+
+	value, err := json.Marshal(data)
 	if err != nil {
 		log.ErrorDetail(redisTag, "error parse data to json: %v", err)
 		return false
@@ -79,9 +82,30 @@ func (r *redisCache) Get(ctx context.Context, service string, id string) string 
 	return value
 }
 
+func (r *redisCache) GetJSON(ctx context.Context, service string, id string, destination interface{}) error {
+	key := fmt.Sprintf("%s:%s", service, id)
+
+	value, err := r.client.Get(ctx, key).Result()
+	if err != nil {
+		log.ErrorDetail(redisTag, "error get data from redis: %v", err)
+		return err
+	}
+
+	isPointer := reflect.ValueOf(destination).Type().Kind() == reflect.Ptr
+	if !isPointer {
+		return errors.New("Error destination is not pointer")
+	}
+
+	err = json.Unmarshal([]byte(value), &destination)
+	if err != nil {
+		log.ErrorDetail(redisTag, "error parse json: %v", err)
+		return err
+	}
+
+	return nil
+}
+
 func (r *redisCache) Del(ctx context.Context, service string, id string) {
 	key := fmt.Sprintf("%s:%s", service, id)
 	r.client.Del(ctx, key)
 }
-
-
